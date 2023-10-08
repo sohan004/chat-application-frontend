@@ -80,7 +80,7 @@ const Login = () => {
                                         onChange={(e) => setEmail(e.target.value)}
                                         value={email}
                                         name='email'
-                                        className="w-full text-lg py-2 border-b border-gray-300 focus:outline-none focus:border-indigo-500"
+                                        className="w-full text-lg py-2 bg-transparent border-b border-gray-300 focus:outline-none focus:border-indigo-500"
                                         type="text"
                                         placeholder="mike@gmail.com"
                                     />
@@ -100,7 +100,7 @@ const Login = () => {
                                         onChange={(e) => setPassword(e.target.value)}
                                         value={password}
                                         name='password'
-                                        className="w-full text-lg py-2 border-b pe-10 border-gray-300 focus:outline-none focus:border-indigo-500"
+                                        className="w-full text-lg bg-transparent py-2 border-b pe-10 border-gray-300 focus:outline-none focus:border-indigo-500"
                                         type={passState}
                                         placeholder="Enter your password"
                                     />

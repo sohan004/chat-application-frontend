@@ -3,17 +3,18 @@ import { MainContext } from "../Auth/AuthContext";
 import { useContext } from "react";
 import { baseURL } from "../../App";
 import moment from "moment/moment";
+import { PiChecks } from "react-icons/pi";
 
 const ChatList = ({ c }) => {
     const { user } = useContext(MainContext)
 
-    console.log(c);
-
     // console.log(c);
 
+
     const findChatUser = c?.createUser?._id == user?._id ? c?.participent[0] : c?.createUser
-    const lastMessage = c?.lastMessage?.seenBy?.find(s => s == user?._id)
-    console.log(lastMessage);
+    const lastMsg = c?.lastMessage?.seenBy?.find(s => s == user?._id)
+
+    // console.log(lastMessage);
 
     return (
         <NavLink to={`/chat/${c._id}`} className={({ isActive }) => `flex px-5 py-5 hover:bg-gray-200 duration-150 transform shadow-sm justify-between relative items-start ${isActive && 'bg-gray-200'}`}>
@@ -24,12 +25,28 @@ const ChatList = ({ c }) => {
                 </div>
                 <div>
                     <p className="font-medium text-lg">{findChatUser?.name}</p>
-                    <p className={`text-sm opacity-90 ${!lastMessage && 'font-bold'}`}><span>{c?.lastMessage ? c?.lastMessage?.message.slice(0, 20) + '...' : 'click to send message'}</span></p>
+                    {
+                        c?.lastMessage ?
+                            <>
+                                {c?.lastMessage?.sender == user?._id ?
+                                    <div className="flex items-center gap-1">
+                                        <PiChecks className={`text-lg ${c?.lastMessage?.seenBy?.filter(s => s != user?._id).length > 0 && 'text-green-600'}`}></PiChecks>
+                                        <span className={`text-sm opacity-90 `}>{c?.lastMessage?.message.slice(0, 20)}</span>
+                                    </div> :
+                                    <>
+                                        <p className={`text-sm opacity-90 ${!lastMsg && 'font-bold'}`}><span>{c?.lastMessage ? c?.lastMessage?.message.slice(0, 20): 'click to send message'}</span></p>
+                                    </>}
+                            </> :
+                            <>
+                            <p className="opacity-90">click to send message</p>
+                            </>
+                    }
+                    {/*  */}
                 </div>
             </div>
-            <p className={`text-xs ${!lastMessage && 'font-bold'}`}>{moment(c.updatedAt).fromNow()}</p>
+            <p className={`text-xs ${!lastMsg && 'font-bold'}`}>{moment(c.updatedAt).fromNow()}</p>
 
-            {!lastMessage && <p className="h-2 w-2 bg-green-500 rounded-full absolute right-4 top-2/4 -translate-y-2/4"></p>}
+            {!lastMsg && <p className="h-2 w-2 bg-green-500 rounded-full absolute right-4 top-2/4 -translate-y-2/4"></p>}
 
         </NavLink>
     );

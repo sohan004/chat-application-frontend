@@ -4,6 +4,8 @@ import { HiUserGroup } from "react-icons/hi";
 import { IoPersonAddSharp } from "react-icons/io5";
 import { MainContext } from "../Auth/AuthContext";
 import ChatList from "../ChatList/ChatList";
+import ChatListLoadItem from "../ChatListLoadItem/ChatListLoadItem";
+import { baseURL } from "../../App";
 
 const LeftSideBar = () => {
 
@@ -18,6 +20,8 @@ const LeftSideBar = () => {
         setChatListLoad
     } = useContext(MainContext)
 
+    // console.log(user);
+
     return (
         <>
             <div className=' w-full md:w-[380px]   overflow-y-auto h-full  border-e py-5'>
@@ -29,7 +33,9 @@ const LeftSideBar = () => {
                             className='text-xl cursor-pointer'>
                         </IoPersonAddSharp>
                         <HiUserGroup className='text-2xl'></HiUserGroup>
-                        <img className='h-10 w-10 rounded-full' src="https://i.ibb.co/F3kXkV0/IMG-20221108-135157.jpg" alt="" />
+                        <img
+                            onClick={() => window.profile_details.showModal()}
+                            className='h-10 w-10 rounded-full cursor-pointer' src={baseURL + '/uploads/' + user?.profileImg} alt="" />
                     </div>
                 </div>
                 <div className='px-5 mb-4 py-2'>
@@ -38,8 +44,32 @@ const LeftSideBar = () => {
                         <FaSearch></FaSearch>
                     </div>
                 </div>
-                {chatList.map((c) => <ChatList key={c._id} c={c}></ChatList>)}
+                {chatListLoad ?
+                    <ChatListLoadItem></ChatListLoadItem>
+                    :
+
+                    <>
+                        {chatList.length == 0 ?
+                            <>
+                                <p className='text-center text-xl font-semibold'>No Chat Found</p>
+
+                                <div
+                                    onClick={() => window.add_user_modal.showModal()}
+                                    className="text-center opacity-40 mt-10 cursor-pointer">
+                                    <IoPersonAddSharp className="mx-auto text-7xl border-2  p-2 border-black rounded-full"></IoPersonAddSharp>
+                                    <p className="text-xl font-semibold mt-1">Add User</p>
+                                </div>
+                            </>
+                            :
+
+                            chatList.map((c) => <ChatList key={c._id} c={c}></ChatList>)
+                        }
+                    </>
+                }
             </div>
+
+            {/* You can open the modal using document.getElementById('ID').showModal() method */}
+
         </>
     );
 };

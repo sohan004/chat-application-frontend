@@ -77,7 +77,7 @@ const Signup = () => {
                                     <input
                                         onChange={e => setName(e.target.value)}
                                         value={name}
-                                        className="w-full text-lg py-2 border-b border-gray-300 focus:outline-none focus:border-indigo-500"
+                                        className="w-full bg-transparent text-lg py-2 border-b border-gray-300 focus:outline-none focus:border-indigo-500"
                                         type="text"
                                         placeholder="Jhon Doe"
                                     />
@@ -87,14 +87,14 @@ const Signup = () => {
                                     <input
                                         onChange={e => setEmail(e.target.value)}
                                         value={email}
-                                        className="w-full text-lg py-2 border-b border-gray-300 focus:outline-none focus:border-indigo-500"
+                                        className="w-full bg-transparent text-lg py-2 border-b border-gray-300 focus:outline-none focus:border-indigo-500"
                                         type="text"
                                         placeholder="mike@gmail.com"
                                     />
                                 </div>
                                 <div className='mt-8'>
                                     <div className="text-sm font-bold text-gray-700 tracking-wide">Profile Image</div>
-                                    <input onChange={e => setImage(e.target.files[0])} type="file" className="file-input file-input-bordered w-full mt-2 max-w-xs" />
+                                    <input onChange={e => setImage(e.target.files[0])} type="file" className="file-input file-input-bordered w-full mt-2 max-w-xs bg-transparent" />
                                 </div>
                                 <div className="mt-8 relative">
                                     <div className="flex justify-between items-center">
@@ -103,7 +103,7 @@ const Signup = () => {
                                     <input
                                         onChange={e => setPassword(e.target.value)}
                                         value={password}
-                                        className="w-full text-lg py-2 pe-10 border-b border-gray-300 focus:outline-none focus:border-indigo-500"
+                                        className="w-full text-lg py-2 bg-transparent pe-10 border-b border-gray-300 focus:outline-none focus:border-indigo-500"
                                         type={passState}
                                         placeholder="Enter your password"
                                     />
