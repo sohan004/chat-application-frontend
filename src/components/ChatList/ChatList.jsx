@@ -13,18 +13,20 @@ const ChatList = ({ c }) => {
 
     const findChatUser = c?.createUser?._id == user?._id ? c?.participent[0] : c?.createUser
     const lastMsg = c?.lastMessage?.seenBy?.find(s => s == user?._id)
+    const imgUrl = c?.chatType == 'group' ? c?.groupImg : findChatUser?.profileImg
 
-    // console.log(lastMessage);
+   
 
     return (
         <NavLink to={`/chat/${c._id}`} className={({ isActive }) => `flex px-5 py-5 hover:bg-gray-200 duration-150 transform shadow-sm justify-between relative items-start ${isActive && 'bg-gray-200'}`}>
             <div className="flex items-start gap-3">
                 <div className="relative">
-                    <img src={baseURL + '/uploads/' + findChatUser?.profileImg} className="h-12 w-12 rounded-full" alt="" />
+                    <img src={baseURL + '/uploads/' + imgUrl} className="h-12 w-12 rounded-full" alt="" />
                     {findChatUser?.activeStatus && <p className="h-3 absolute bottom-0 right-0 w-3 bg-green-500 border rounded-full"></p>}
                 </div>
                 <div>
-                    <p className="font-medium text-lg">{findChatUser?.name}</p>
+                    <p className="font-medium flex items-center gap-1 text-lg">{c?.chatType == 'group' ? c?.groupName : findChatUser?.name}
+                        <span className="opacity-40 font-normal">{c?.chatType == 'group' && '(group)'}</span></p>
                     {
                         c?.lastMessage ?
                             <>
@@ -34,11 +36,11 @@ const ChatList = ({ c }) => {
                                         <span className={`text-sm opacity-90 `}>{c?.lastMessage?.message.slice(0, 20)}</span>
                                     </div> :
                                     <>
-                                        <p className={`text-sm opacity-90 ${!lastMsg && 'font-bold'}`}><span>{c?.lastMessage ? c?.lastMessage?.message.slice(0, 20): 'click to send message'}</span></p>
+                                        <p className={`text-sm opacity-90 ${!lastMsg && 'font-bold'}`}><span>{c?.lastMessage ? c?.lastMessage?.message.slice(0, 20) : 'click to send message'}</span></p>
                                     </>}
                             </> :
                             <>
-                            <p className="opacity-90">click to send message</p>
+                                <p className="opacity-90">click to send message</p>
                             </>
                     }
                     {/*  */}

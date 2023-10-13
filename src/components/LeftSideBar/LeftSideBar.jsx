@@ -17,10 +17,27 @@ const LeftSideBar = () => {
         chatList,
         setChatList,
         chatListLoad,
-        setChatListLoad
+        setChatListLoad,
+        chatList2,
+        setChatList2
     } = useContext(MainContext)
 
-    // console.log(user);
+    const searchFilter = (e) => {
+        const value = e.target.value;
+        if (value.length == 0) {
+            setChatList(chatList2);
+            return;
+        }
+        const newChatList = chatList2.filter(c => {
+            const match1 = c?.createUser?.name.toLowerCase().includes(value.toLowerCase())
+            const match2 = c?.participent[0]?.name.toLowerCase().includes(value.toLowerCase())
+            const match3 = c?.groupName?.toLowerCase().includes(value.toLowerCase())
+            if (match1 || match2 || match3) {
+                return c;
+            }
+        });
+        setChatList(newChatList);
+    }
 
     return (
         <>
@@ -32,7 +49,9 @@ const LeftSideBar = () => {
                             onClick={() => window.add_user_modal.showModal()}
                             className='text-xl cursor-pointer'>
                         </IoPersonAddSharp>
-                        <HiUserGroup className='text-2xl'></HiUserGroup>
+                        <HiUserGroup
+                            onClick={() => window.add_group_modal.showModal()}
+                            className='text-2xl cursor-pointer'></HiUserGroup>
                         <img
                             onClick={() => window.profile_details.showModal()}
                             className='h-10 w-10 rounded-full cursor-pointer' src={baseURL + '/uploads/' + user?.profileImg} alt="" />
@@ -40,7 +59,9 @@ const LeftSideBar = () => {
                 </div>
                 <div className='px-5 mb-4 py-2'>
                     <div className=' flex items-center gap-2 border-green-500 border-b px-4'>
-                        <input type="text" placeholder='search by name' name="chatlistname" className='w-full  bg-transparent focus:outline-none px-2 py-1' id="" />
+                        <input
+                            onChange={searchFilter}
+                            type="text" placeholder='search by name' name="chatlistname" className='w-full  bg-transparent focus:outline-none px-2 py-1' id="" />
                         <FaSearch></FaSearch>
                     </div>
                 </div>

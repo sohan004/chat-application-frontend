@@ -10,64 +10,131 @@ import AuthContext, { MainContext } from './components/Auth/AuthContext';
 import SocketIoHandle from './components/SocketIoHandle/SocketIoHandle';
 import LeftSideBar from './components/LeftSideBar/LeftSideBar';
 import sound from './assets/audio/out-of-nowhere-message-tone.mp3';
+import sound2 from './assets/audio/treasure.mp3';
 import Wrap from './components/Wrap/Wrap';
 import moment from 'moment';
-import { toast } from 'react-toastify';
+import { ToastContainer, toast } from 'react-toastify';
 
-export const baseURL = 'http://192.168.0.108:3000'
+export const baseURL = 'https://chat-backend-4iff.onrender.com'
 
 
 const App = () => {
   const navigate = useNavigate();
 
-  const { user, setUser, load, socket, setLoad, chatList, setChatList, chatListLoad, setChatListLoad } = useContext(MainContext);
+  const { user, setUser, load, socket, setLoad, chatList, setChatList, setChatList2, chatListLoad, setChatListLoad } = useContext(MainContext);
 
   const path = useLocation().pathname;
   const chatIdPath = path?.split('/')[path?.split('/').length - 1]
-  // console.log(chatIdPath);
 
   const newChatAdded = (change) => {
-    // console.log(change?.chatInfo?.chatId);
+    if (!chatIdPath) {
+      const mathChat = chatList?.find((d) => d?._id == change?.chatInfo?.chatId);
+      // console.log(mathChat);
+      if (mathChat) {
 
-    const mathChat = chatList?.find((d) => d?._id == change?.chatInfo?.chatId);
-    console.log(mathChat);
-    if (mathChat) {
-      if (chatIdPath != change?.chatInfo?.chatId) {
-        toast(change?.chatInfo?.message, {
-          onClick: () => {
-            navigate(`/chat/${change?.chatInfo?.chatId}`);
+        if (chatIdPath != change?.chatInfo?.chatId) {
+          toast(change?.chatInfo?.message, {
+            onClick: () => {
+              navigate(`/chat/${change?.chatInfo?.chatId}`);
+            }
+          })
+          const audio = new Audio(sound);
+          audio.play();
+          console.log('yes');
+        }
+
+        setChatList(prev => [
+          {
+            ...mathChat,
+            lastMessage: change?.chatInfo,
+            updatedAt: change?.chatInfo?.updatedAt
+          }
+          , ...prev.filter((d) => d?._id != change?.chatInfo?.chatId)]);
+
+
+
+      }
+    }
+  }
+
+
+
+  const seenByFunction = (change) => {
+    // console.log(change);
+    const check = chatList?.find(c => c?._id == change?.chatId)
+    // console.log(check);
+    if (check) {
+      // console.log(check?.lastMessage?._id, change?.senMessageId[change?.senMessageId?.length - 1]);
+      if (check?.lastMessage?._id == change?.senMessageId[change?.senMessageId?.length - 1]) {
+        const newChatList = chatList?.map(c => {
+          if (c?._id == change?.chatId) {
+            return {
+              ...c,
+              lastMessage: {
+                ...c?.lastMessage,
+                seenBy: [...c.lastMessage?.seenBy, change?.seenByUser]
+              }
+            }
+          }
+          else {
+            return c;
           }
         })
-        const audio = new Audio(sound);
-        audio.play();
-        console.log('yes');
+
+        setChatList(newChatList);
+
       }
-
-      const newChatList = chatList?.filter((d) => d?._id != change?.chatInfo?.chatId);
-      setChatList([
-        {
-          ...mathChat,
-          lastMessage: change?.chatInfo,
-          updatedAt: change?.chatInfo?.updatedAt
-        }
-        , ...newChatList]);
     }
-
   }
+
+  const groupUserRemove = (change) => {
+    if (change?.userId == user?._id) {
+      setChatList(prev => prev.filter(c => c?._id != change?.chatId));
+    }
+  }
+
+  const grpNewUserAdd = (change) => {
+    if (change?.newUserId?.find(u => u == user?._id)) {
+      setChatList(prev => [
+        change?.chatInfo,
+        ...prev.filter(c => c?._id != change?.chatInfo?._id)
+      ])
+      const audio = new Audio(sound2);
+      audio.play();
+    }
+  }
+
+
+  const chatDelete = (change) => {
+    if (chatList?.find(c => c?._id == change?.chatId)) {
+      setChatList(prev => prev.filter(c => c?._id != change?.chatId));
+    }
+  }
+
 
   useEffect(() => {
     socket.on('newChatAdd2', newChatAdded);
+    socket.on('seenBy2', seenByFunction);
+    socket.on('group User Remove', groupUserRemove);
+    socket.on('grp New User Add', grpNewUserAdd);
+    socket.on('chat Delete', chatDelete);
 
     return () => {
       socket.off('newChatAdd2');
+      socket.off('seenBy2');
+      socket.off('group User Remove');
+      socket.off('grp New User Add');
+      socket.off('chat Delete');
     };
-  }, [newChatAdded, path]);
+  }, [newChatAdded, seenByFunction, groupUserRemove, grpNewUserAdd, chatList, chatDelete]);
+
+
+
 
 
   return (
     <div className='h-screen overflow-hidden overflow-y-auto flex'>
 
-      <Wrap></Wrap>
 
       <div className='hidden md:block'>
 
@@ -97,12 +164,26 @@ const App = () => {
             onClick={() => {
               window.profile_details.close();
               setChatList([]);
+              setChatList2([]);
               localStorage.removeItem('token');
               setUser(null);
             }}
             className='text-center flex justify-center items-center gap-2 cursor-pointer text-xl mt-5 text-red-500'>Log Out <FaSignOutAlt></FaSignOutAlt></p>
         </div>
       </dialog>
+
+      <ToastContainer
+        position="top-center"
+        autoClose={2000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
 
     </div>
   );

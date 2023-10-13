@@ -9,6 +9,7 @@ import Signup from './components/Authentication/Signup.jsx'
 import Protected from './components/ProtectedRoute/Protected.jsx'
 import InitialPage from './components/InitialPage/InitialPage.jsx'
 import ChatPage from './components/ChatPage/ChatPage.jsx'
+import LoginRouteProtected from './components/ProtectedRoute/LoginRouteProtected.jsx'
 
 
 
@@ -29,11 +30,11 @@ const router = createBrowserRouter([
   },
   {
     path: '/login',
-    element: <Login />
+    element: <LoginRouteProtected><Login /></LoginRouteProtected>
   },
   {
     path: '/register',
-    element: <Signup />
+    element: <LoginRouteProtected><Signup /></LoginRouteProtected>
   }
 ])
 

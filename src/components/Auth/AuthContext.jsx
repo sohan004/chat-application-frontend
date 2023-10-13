@@ -2,7 +2,7 @@ import { createContext, useEffect, useState } from "react";
 import { baseURL } from "../../App";
 import io from 'socket.io-client';
 import { useLocation } from "react-router-dom";
-const socket = io.connect('http://192.168.0.108:3000');
+const socket = io.connect('https://chat-backend-4iff.onrender.com');
 
 
 export const MainContext = createContext(null);
@@ -11,6 +11,7 @@ const AuthContext = ({ children }) => {
     const [user, setUser] = useState(null);
     const [load, setLoad] = useState(true);
     const [chatList, setChatList] = useState([]);
+    const [chatList2, setChatList2] = useState([]);
     const [chatListLoad, setChatListLoad] = useState(true);
    
 
@@ -26,15 +27,18 @@ const AuthContext = ({ children }) => {
             .then(data => {
                 if (data.success) {
                     setChatList(data.chatList);
+                    setChatList2(data.chatList);
                     setChatListLoad(false);
                 }
                 else {
                     setChatList([]);
+                    setChatList2([]);
                     setChatListLoad(false);
                 }
             })
             .catch(err => {
                 setChatList([]);
+                setChatList2([]);
                 setChatListLoad(false);
             })
     }, [user]);
@@ -82,7 +86,9 @@ const AuthContext = ({ children }) => {
         setChatList,
         chatListLoad,
         setChatListLoad,
-        socket
+        socket,
+        chatList2,
+        setChatList2
     }
     return (
         <MainContext.Provider value={value}>

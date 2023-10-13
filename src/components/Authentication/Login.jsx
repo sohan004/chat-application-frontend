@@ -8,7 +8,7 @@ import { MainContext } from '../Auth/AuthContext';
 
 const Login = () => {
     const [passState, setPassState] = useState('password');
-    const { setUser } = useContext(MainContext);
+    const { setUser, user, load } = useContext(MainContext);
 
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
@@ -16,6 +16,7 @@ const Login = () => {
     const [password, setPassword] = useState('');
     const navigate = useNavigate();
 
+    
 
     const handle = (e) => {
         e.preventDefault();
