@@ -22,7 +22,7 @@ const ChatList = ({ c }) => {
             <div className="flex items-start gap-3">
                 <div className="relative">
                     <img src={baseURL + '/uploads/' + imgUrl} className="h-12 w-12 rounded-full" alt="" />
-                    {findChatUser?.activeStatus && <p className="h-3 absolute bottom-0 right-0 w-3 bg-green-500 border rounded-full"></p>}
+                    {findChatUser?.activeStatus && <p className="h-3 absolute  bottom-0 right-0 w-3 bg-green-500 border border-white rounded-full"></p>}
                 </div>
                 <div>
                     <p className="font-medium flex items-center gap-1 text-lg">{c?.chatType == 'group' ? c?.groupName : findChatUser?.name}

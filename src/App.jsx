@@ -23,6 +23,32 @@ const App = () => {
 
   const { user, setUser, load, socket, setLoad, chatList, setChatList, setChatList2, chatListLoad, setChatListLoad } = useContext(MainContext);
 
+
+  useEffect(() => {
+    if (!user) return;
+
+    fetch(`${baseURL}/account/active-status/online`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `${localStorage.getItem('token')}`
+      }
+    })
+      .then(res => res.json())
+      .then(data => {
+        console.log(data);
+      })
+      .catch(err => {
+        console.log(err);
+      })
+
+    setTimeout(() => {
+
+    }, 20000);
+
+
+  }, [user]);
+
+
   const path = useLocation().pathname;
   const chatIdPath = path?.split('/')[path?.split('/').length - 1]
 
@@ -112,12 +138,80 @@ const App = () => {
   }
 
 
+  const userOnlineStatus = (change) => {
+    setChatList(prev => prev.map(c => {
+      if (c?.createUser?._id == change?.userId) {
+        return {
+          ...c,
+          createUser: {
+            ...c?.createUser,
+            activeStatus: true
+          }
+        }
+      }
+      else if (c?.participent?.find(p => p?._id == change?.userId)) {
+        return {
+          ...c,
+          participent: c?.participent?.map(p => {
+            if (p?._id == change?.userId) {
+              return {
+                ...p,
+                activeStatus: true
+              }
+            }
+            else {
+              return p;
+            }
+          })
+        }
+      }
+      else {
+        return c;
+      }
+    }))
+  }
+  const userOflineStatus = (change) => {
+    setChatList(prev => prev.map(c => {
+      if (c?.createUser?._id == change?.userId) {
+        return {
+          ...c,
+          createUser: {
+            ...c?.createUser,
+            activeStatus: false
+          }
+        }
+      }
+      else if (c?.participent?.find(p => p?._id == change?.userId)) {
+        return {
+          ...c,
+          participent: c?.participent?.map(p => {
+            if (p?._id == change?.userId) {
+              return {
+                ...p,
+                activeStatus: false
+              }
+            }
+            else {
+              return p;
+            }
+          })
+        }
+      }
+      else {
+        return c;
+      }
+    }))
+  }
+
+
   useEffect(() => {
     socket.on('newChatAdd2', newChatAdded);
     socket.on('seenBy2', seenByFunction);
     socket.on('group User Remove', groupUserRemove);
     socket.on('grp New User Add', grpNewUserAdd);
     socket.on('chat Delete', chatDelete);
+    socket.on('user online status', userOnlineStatus);
+    socket.on('user ofline status', userOflineStatus);
 
     return () => {
       socket.off('newChatAdd2');
@@ -125,8 +219,10 @@ const App = () => {
       socket.off('group User Remove');
       socket.off('grp New User Add');
       socket.off('chat Delete');
+      socket.off('user online status');
+      socket.off('user ofline status');
     };
-  }, [newChatAdded, seenByFunction, groupUserRemove, grpNewUserAdd, chatList, chatDelete]);
+  }, [newChatAdded, seenByFunction, groupUserRemove, grpNewUserAdd, chatList, chatDelete, userOnlineStatus, userOflineStatus]);
 
 
 

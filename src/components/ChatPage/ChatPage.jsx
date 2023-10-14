@@ -192,6 +192,7 @@ const ChatPage = () => {
     }, [chatLoad])
 
     useEffect(() => {
+        setTyping(false);
         setChatData([])
         setChatLoad(true);
         fetch(`${baseURL}/chatList/chat/${id}?skip=0`, { headers: { 'Authorization': `${localStorage.getItem('token')}` } })

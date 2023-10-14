@@ -13,7 +13,7 @@ const AuthContext = ({ children }) => {
     const [chatList, setChatList] = useState([]);
     const [chatList2, setChatList2] = useState([]);
     const [chatListLoad, setChatListLoad] = useState(true);
-   
+
 
     useEffect(() => {
         if (!user) return;
@@ -73,9 +73,9 @@ const AuthContext = ({ children }) => {
 
     }, []);
 
-    
 
-   
+
+
 
     const value = {
         user,
