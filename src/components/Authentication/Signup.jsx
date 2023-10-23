@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { FcGoogle } from 'react-icons/fc';
-import { FaEye, FaEyeSlash, FaSpinner } from 'react-icons/fa';
+import { FaEye, FaEyeSlash, FaSpinner, FaWindowClose } from 'react-icons/fa';
 import { Link, useNavigate } from 'react-router-dom';
 import { baseURL } from '../../App';
 import Swal from 'sweetalert2';
+import OTPInput, { ResendOTP } from "otp-input-react";
 
 
 const Signup = () => {
@@ -15,9 +16,12 @@ const Signup = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const navigate = useNavigate();
+    const [otp, setOtp] = useState('');
+    const [err, setErr] = useState('');
 
+    const [otpToken, setOtpToken] = useState('');
 
-    const handle = (e) => {
+    const otpRequest = (e) => {
         e.preventDefault();
         setError('');
         setLoading(true);
@@ -33,12 +37,12 @@ const Signup = () => {
             return;
         }
 
-
         const formData = new FormData();
         formData.append('image', image);
         formData.append('jsonData', JSON.stringify({ name, email, password }));
 
-        fetch(`${baseURL}/account`, {
+
+        fetch(`${baseURL}/account/otpRequest`, {
             method: 'POST',
             body: formData
         })
@@ -47,16 +51,57 @@ const Signup = () => {
                 if (data.success) {
                     setLoading(false);
                     setError('');
+                    setErr('');
+                    setOtp('');
+                    setOtpToken(data?.token);
+                    window.otp_modal.showModal();
+                }
+                else {
+                    setError(data.message);
+                    setLoading(false);
+                    setOtpToken('');
+                }
+            })
+            .catch(err => {
+                setError('Something went wrong');
+                setLoading(false);
+                setOtpToken('');
+            })
+    };
+
+
+    const handle = (e) => {
+        if (otp.length < 4) {
+            return setErr('Please enter 4 digit otp')
+        }
+
+        setErr('');
+        setLoading(true);
+
+        fetch(`${baseURL}/account`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ otp, otpToken })
+        })
+            .then(res => res.json())
+            .then(data => {
+                console.log(data);
+                setLoading(false);
+                if (data.success) {
+                    setErr('');
+                    window.otp_modal.close();
                     Swal.fire(
                         'Registere Successfully!',
                         'You can login now',
                         'success'
-                      )
+                    )
                     navigate('/login');
                     // window.location.href = '/login';
                 }
                 else {
-                    setError(data.message);
+                    setErr(data.message);
                     setLoading(false);
                 }
             })
@@ -71,7 +116,7 @@ const Signup = () => {
                         <h2 className="text-center text-4xl text-indigo-900 font-display font-semibold lg:text-left xl:text-5xl xl:text-bold">Sign up</h2>
                         <div className="mt-12">
                             {error && <p className='text-red-500  my-4 text-lg'>{error}</p>}
-                            <form onSubmit={handle}>
+                            <form onSubmit={otpRequest}>
                                 <div>
                                     <div className="text-sm font-bold text-gray-700 tracking-wide">Full Name</div>
                                     <input
@@ -133,6 +178,39 @@ const Signup = () => {
                     </div>
                 </div>
             </div>
+
+
+            <dialog id="otp_modal" className="modal">
+                <div method="dialog" className="modal-box max-w-[640px] bg-white p-0 rounded-3xl relative text-[#100A55] ">
+                    <FaWindowClose onClick={() => window.otp_modal.close()} className='absolute text-[#100A55]  top-4 text-3xl cursor-pointer left-4'></FaWindowClose>
+                    <h1 className="text-2xl mt-7 text-center text-[#100A55] lg:text-4xl">Enter Code</h1>
+                    <p className='text-center font-medium my-4 text-red-500'>{err}</p>
+                    <div className="p-6 mb-7   lg:mb-5">
+                        <div className=' max-w-[500px] mx-auto text-center '>
+                            <div>
+                                <OTPInput
+                                    inputClassName='border-2 text-black bg-white rounded py-6 border-[#100A55] focus:outline-none flex-grow'
+                                    className="text-center flex justify-center w-full max-w-[300px] mx-auto"
+                                    value={otp} onChange={e => {
+                                        // verifyOtp(e)
+                                        setOtp(e)
+
+                                    }}
+                                    autoFocus OTPLength={4}
+                                    otpType="number"
+                                // disabled={verifyStatus}
+                                />
+                                <div>
+                                    <button
+                                        disabled={loading}
+                                        onClick={handle}
+                                        className="btn mt-5 text-white hover:bg-blue-900 bg-blue-600 border-0">Send Otp</button>
+                                </div>
+                            </div> </div>
+                    </div>
+
+                </div>
+            </dialog>
         </div>
     );
 };

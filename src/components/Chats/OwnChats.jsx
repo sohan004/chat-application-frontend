@@ -33,7 +33,7 @@ const OwnChats = ({
                     <p className='text-xs opacity-90 text-right mt-1'>{moment(c.createdAt).fromNow()}</p>
                 </div>
                 {/* <p className={`text-right ${chatData?.length == 0 && 'hidden'} ${c?.seenBy.find(s => s == oponent?._id) ? 'text-green-600 hidden' : ''}`}>hello</p> */}
-                <PiChecks className={`text-right ${chatData?.length == 0 && 'hidden'} ${c?.seenBy.filter(s => s != user?._id).length > 0 ? 'text-green-600 hidden' : ''}`}></PiChecks>
+                <PiChecks className={`text-right ${chatData?.length == 0 && 'hidden'}  ${c?.seenBy.filter(s => s != user?._id).length > 0 ? 'text-green-600 hidden' : ''}`}></PiChecks>
 
             </div>
         </>
